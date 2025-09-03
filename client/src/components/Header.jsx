@@ -50,7 +50,7 @@ export default function Header() {
             Sign In
           </Button>
         </Link>
-        <NavbarToggle />
+        <NavbarToggle className='cursor-pointer' />
       </div>
       <NavbarCollapse>
         <NavbarLink as={Link} to='/' active={path === '/'}>
