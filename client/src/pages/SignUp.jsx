@@ -83,7 +83,7 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
-            <Button
+            <Button className='cursor-pointer'
               gradientduotone='purpleToPink'
               type='submit'
               disabled={loading}
