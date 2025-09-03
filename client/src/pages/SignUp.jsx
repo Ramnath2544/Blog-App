@@ -29,7 +29,7 @@ export default function SignUp() {
         return setErrorMessage(data.message);
       }
       setLoading(false);
-      if(res.ok) {
+      if (res.ok) {
         navigate('/sign-in');
       }
     } catch (error) {
@@ -42,7 +42,7 @@ export default function SignUp() {
     <div className='min-h-screen mt-20'>
       <div className='flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5'>
         {/* left */}
-        <div className=''>
+        <div className='flex-1'>
           <Link to='/' className='font-bold dark:text-white text-4xl'>
             <span className='px-2 py-1 bg-gradient-to-r from-red-500 to-yellow-300 rounded-lg text-white'>
               Blogify
@@ -69,7 +69,7 @@ export default function SignUp() {
               <Label value='Your email' />
               <TextInput
                 type='email'
-                placeholder='name@company.com'
+                placeholder='user@gmail.com'
                 id='email'
                 onChange={handleChange}
               />
