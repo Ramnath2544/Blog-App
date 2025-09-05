@@ -13,7 +13,6 @@ import {
 } from 'flowbite-react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 export default function Header() {
@@ -34,21 +33,10 @@ export default function Header() {
           type='text'
           placeholder='Search...'
           rightIcon={AiOutlineSearch}
-          className='hidden lg:inline'
+          className='lg:inline'
         />
       </form>
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
-        <AiOutlineSearch />
-      </Button>
       <div className='flex gap-2 md:order-2'>
-        <Button
-          className='cursor-pointer w-12 h-10 hidden sm:inline'
-          color='gray'
-          pill
-        >
-          <FaMoon />
-        </Button>
-
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
