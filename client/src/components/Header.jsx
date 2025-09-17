@@ -33,9 +33,12 @@ export default function Header() {
           type='text'
           placeholder='Search...'
           rightIcon={AiOutlineSearch}
-          className='lg:inline'
+          className='hidden lg:inline'
         />
       </form>
+      <Button className='w-12 h-10 lg:hidden' color='white' pill>
+        <AiOutlineSearch />
+      </Button>
       <div className='flex gap-2 md:order-2'>
         {currentUser ? (
           <Dropdown
