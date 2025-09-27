@@ -14,12 +14,13 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
   return (
-    <Navbar className='border-b-2'>
+    <Navbar className='border-b-2 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700'>
       <Link
         to='/'
         className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
@@ -34,12 +35,14 @@ export default function Header() {
           placeholder='Search...'
           rightIcon={AiOutlineSearch}
           className='hidden lg:inline'
+          color="gray"
         />
       </form>
-      <Button className='w-12 h-10 lg:hidden' color='white' pill>
+      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
         <AiOutlineSearch />
       </Button>
       <div className='flex gap-2 md:order-2'>
+        <ThemeToggle />
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
@@ -68,7 +71,7 @@ export default function Header() {
         ) : (
           <Link to='/sign-in'>
             <Button
-              className='cursor-pointer'
+              className='cursor-pointer firebase-button'
               gradientduotone='purpleToBlue'
               outline
             >
