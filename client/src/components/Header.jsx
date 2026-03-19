@@ -13,12 +13,16 @@ import {
 } from 'flowbite-react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { FaMoon, FaSun } from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleTheme } from '../redux/theme/themeSlice';
 
 export default function Header() {
   const path = useLocation().pathname;
+    const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
+
   return (
     <Navbar className='border-b-2'>
       <Link
@@ -41,13 +45,20 @@ export default function Header() {
         <AiOutlineSearch />
       </Button>
       <div className='flex gap-2 md:order-2'>
-        <Button
-          className='cursor-pointer w-12 h-10 hidden sm:inline'
-          color='gray'
-          pill
-        >
-          <FaMoon />
-        </Button>
+        <button
+  onClick={() => dispatch(toggleTheme())}
+  className={`cursor-pointer w-10 h-10 hidden sm:flex items-center justify-center rounded-full transition-all duration-500 
+    ${theme === 'light'
+      ? 'bg-gradient-to-br from-amber-300 to-orange-400 shadow-[0_0_12px_rgba(251,146,60,0.8)] hover:shadow-[0_0_20px_rgba(251,146,60,1)] hover:scale-110'
+      : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-[0_0_12px_rgba(139,92,246,0.8)] hover:shadow-[0_0_20px_rgba(139,92,246,1)] hover:scale-110'
+    }`}
+>
+  {theme === 'light' ? (
+    <FaSun className='text-white text-lg drop-shadow-[0_0_4px_rgba(255,255,255,0.9)] animate-spin-slow' />
+  ) : (
+    <FaMoon className='text-white text-lg drop-shadow-[0_0_4px_rgba(255,255,255,0.9)] animate-moon-pulse' />
+  )}
+</button>
 
         {currentUser ? (
           <Dropdown
