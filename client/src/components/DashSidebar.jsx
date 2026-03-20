@@ -11,6 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 export default function DashSidebar() {
   const location = useLocation();
   const [tab, setTab] = useState('');
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
@@ -23,21 +24,28 @@ export default function DashSidebar() {
     <Sidebar className='w-full md:w-56'>
       <SidebarItems>
         <SidebarItemGroup>
-          <Link to='/dashboard?tab=profile'>
-            <SidebarItem
-              active={tab === 'profile'}
-              icon={HiUser}
-              label={'User'}
-              labelColor='dark'
-            >
-              Profile
-            </SidebarItem>
-          </Link>
-          <Link to='/dashboard?tab=signout'>
-            <SidebarItem icon={HiArrowSmRight} className='cursor-pointer'>
-              Sign Out
-            </SidebarItem>
-          </Link>
+
+          <SidebarItem
+            as={Link}
+            to='/dashboard?tab=profile'
+            active={tab === 'profile'}
+            icon={HiUser}
+            label='User'
+            labelColor='dark'
+          >
+            Profile
+          </SidebarItem>
+
+          <SidebarItem
+            as={Link}
+            to='/dashboard?tab=signout'
+            active={tab === 'signout'}
+            icon={HiArrowSmRight}
+            className='cursor-pointer'
+          >
+            Sign Out
+          </SidebarItem>
+
         </SidebarItemGroup>
       </SidebarItems>
     </Sidebar>
