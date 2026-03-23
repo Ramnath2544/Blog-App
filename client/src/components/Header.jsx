@@ -16,6 +16,7 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
+import { avatarUrl } from "../constants/defaultAvatarUrl";
 
 export default function Header() {
   const path = useLocation().pathname;
@@ -69,7 +70,7 @@ export default function Header() {
               <Avatar
                 className="cursor-pointer"
                 alt="user"
-                img={currentUser.profilePicture}
+                img={avatarUrl(currentUser.profilePicture)}
                 rounded
               />
             }

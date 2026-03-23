@@ -1,4 +1,4 @@
-import User from '../models/user.model.js';
+import User, { DEFAULT_PROFILE_PICTURE } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
@@ -51,6 +51,11 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(400, 'Invalid password'));
     }
 
+    if (!validUser.profilePicture) {
+      validUser.profilePicture = DEFAULT_PROFILE_PICTURE;
+      await validUser.save();
+    }
+
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
 
     const { password: pass, ...rest } = validUser._doc;
@@ -72,6 +77,12 @@ export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
+      // Firebase often returns null for photoURL — fix legacy rows with null/empty picture
+      if (!user.profilePicture || user.profilePicture === '') {
+        user.profilePicture = googlePhotoUrl || DEFAULT_PROFILE_PICTURE;
+        await user.save();
+      }
+
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password, ...rest } = user._doc;
       res
@@ -85,13 +96,14 @@ export const google = async (req, res, next) => {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      // Explicit null from Google overrides Mongoose default — always fall back
       const newUser = new User({
         username:
           name.toLowerCase().split(' ').join('') +
           Math.random().toString(9).slice(-4),
         email,
         password: hashedPassword,
-        profilePicture: googlePhotoUrl,
+        profilePicture: googlePhotoUrl || DEFAULT_PROFILE_PICTURE,
       });
       await newUser.save();
 

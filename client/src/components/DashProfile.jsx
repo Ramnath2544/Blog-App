@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Button, TextInput } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
+import { avatarUrl } from '../constants/defaultAvatarUrl';
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -80,7 +81,7 @@ export default function DashProfile() {
           onClick={() => filePickerRef.current.click()}
         >
           <img
-            src={imageFileUrl || currentUser.profilePicture}
+            src={imageFileUrl || avatarUrl(currentUser.profilePicture)}
             alt='user'
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${isUploading ? 'opacity-50' : ''}`}
           />
