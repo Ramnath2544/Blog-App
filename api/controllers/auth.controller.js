@@ -77,7 +77,6 @@ export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
-      // Firebase often returns null for photoURL — fix legacy rows with null/empty picture
       if (!user.profilePicture || user.profilePicture === '') {
         user.profilePicture = googlePhotoUrl || DEFAULT_PROFILE_PICTURE;
         await user.save();
@@ -96,7 +95,7 @@ export const google = async (req, res, next) => {
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-      // Explicit null from Google overrides Mongoose default — always fall back
+
       const newUser = new User({
         username:
           name.toLowerCase().split(' ').join('') +
