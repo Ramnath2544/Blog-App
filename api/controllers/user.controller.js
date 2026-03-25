@@ -7,58 +7,92 @@ export const test = (req, res) => {
 };
 
 export const updateUser = async (req, res, next) => {
+  let tokenUserId = req.user?.id || req.user?._id;
+  if (!tokenUserId) return next(errorHandler(401, 'Unauthorized'));
 
-  const tokenUserId = req.user.id || req.user._id;
-  
-  if (tokenUserId !== req.params.userId) {
+  tokenUserId = tokenUserId.toString();
+  const requestedUserId = req.params?.userId?.toString();
+
+  // Security: only allow updating your own profile.
+  if (requestedUserId && tokenUserId !== requestedUserId) {
     return next(errorHandler(403, 'You are not allowed to update this user'));
   }
 
-  if (req.body.password) {
-    if (req.body.password.length < 6) {
-      return next(errorHandler(400, 'Password must be at least 6 characters'));
-    }
-    req.body.password = bcrypt.hashSync(req.body.password, 10);
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return next(errorHandler(400, 'No data provided'));
   }
 
-  if (req.body.username) {
-    if (req.body.username.length < 7 || req.body.username.length > 20) {
+  const updateFields = {};
+
+  if (req.body.username !== undefined) {
+    const username = req.body.username;
+
+    if (username.length < 7 || username.length > 20) {
       return next(
-        errorHandler(400, 'Username must be between 7 and 20 characters')
+        errorHandler(400, 'Username must be between 7 and 20 characters'),
       );
     }
-    if (req.body.username.includes(' ')) {
+    if (username.includes(' ')) {
       return next(errorHandler(400, 'Username cannot contain spaces'));
     }
-    
-    if (req.body.username !== req.body.username.toLowerCase()) {
+    if (username !== username.toLowerCase()) {
       return next(errorHandler(400, 'Username must be lowercase'));
     }
-    if (!req.body.username.match(/^[a-z0-9]+$/)) {
+    if (!username.match(/^[a-z0-9]+$/)) {
       return next(
         errorHandler(
           400,
-          'Username can only contain lowercase letters and numbers'
-        )
+          'Username can only contain lowercase letters and numbers',
+        ),
       );
     }
+
+    updateFields.username = username;
+  }
+
+  if (req.body.email !== undefined) {
+    updateFields.email = req.body.email;
+  }
+
+  if (req.body.profilePicture !== undefined) {
+    updateFields.profilePicture = req.body.profilePicture;
+  }
+
+  if (req.body.password !== undefined) {
+    // If user cleared the password field, treat it as 'no password update'.
+    if (
+      typeof req.body.password !== 'string' ||
+      req.body.password.trim() === ''
+    ) {
+      // Do nothing.
+    } else {
+      if (req.body.password.length < 6) {
+        return next(
+          errorHandler(400, 'Password must be at least 6 characters'),
+        );
+      }
+      updateFields.password = bcrypt.hashSync(req.body.password, 10);
+    }
+  }
+
+  if (Object.keys(updateFields).length === 0) {
+    return next(errorHandler(400, 'No valid fields to update'));
   }
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.userId,
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          profilePicture: req.body.profilePicture,
-          password: req.body.password,
-        },
-      },
-      { new: true }
+      tokenUserId,
+      { $set: updateFields },
+      { new: true },
     );
-    const { password, ...rest } = updatedUser._doc;
-    res.status(200).json(rest);
+
+    if (!updatedUser) {
+      return next(errorHandler(404, 'User not found'));
+    }
+
+    const updated = updatedUser.toObject();
+    delete updated.password;
+    res.status(200).json(updated);
   } catch (error) {
     next(error);
   }
