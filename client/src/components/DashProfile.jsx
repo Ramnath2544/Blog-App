@@ -231,7 +231,7 @@ export default function DashProfile() {
             ? "Loading..."
             : isUploading
               ? "Uploading Image..."
-              : "Update Profile"}
+              : "Update"}
         </Button>
       </form>
 
