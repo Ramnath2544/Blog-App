@@ -19,6 +19,7 @@ import {
   deleteUserFailure,
   signoutSuccess,
 } from "../redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -233,6 +234,17 @@ export default function DashProfile() {
               ? "Uploading Image..."
               : "Update"}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to="/create-post">
+            <Button
+              type="button"
+              gradientduotone="purpleToPink"
+              className="cursor-pointer w-full"
+            >
+            Create a post
+          </Button>
+          </Link>
+        )}
       </form>
 
       {updateSuccessMsg && (
@@ -254,7 +266,12 @@ export default function DashProfile() {
         >
           Delete Account
         </span>
-        <span onClick={handleSignout} className="cursor-pointer hover:underline">Sign Out</span>
+        <span
+          onClick={handleSignout}
+          className="cursor-pointer hover:underline"
+        >
+          Sign Out
+        </span>
       </div>
       <Modal
         show={showModal}
