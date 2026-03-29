@@ -2,6 +2,7 @@ import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
 import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreatePost() {
   const [imageFile, setImageFile] = useState(null);
@@ -9,7 +10,11 @@ export default function CreatePost() {
   const [imageUploadError, setImageUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  const [formData, setFormData] = useState({});
+  const [publishError, setPublishError] = useState(null);
+
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -43,6 +48,7 @@ export default function CreatePost() {
 
       const res = await fetch('/api/upload-image', {
         method: 'POST',
+        credentials: 'include', // Crucial for sending HTTP-only cookies to prevent 401 Unauthorized
         body: uploadData,
       });
 
@@ -60,6 +66,7 @@ export default function CreatePost() {
       }
 
       setImageFileUrl(data.imageUrl);
+      setFormData({ ...formData, image: data.imageUrl });
       setIsUploading(false);
     } catch (err) {
       setImageUploadError(
@@ -69,25 +76,66 @@ export default function CreatePost() {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/post/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Crucial for sending HTTP-only cookies to prevent 401 Unauthorized
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPublishError(
+          data.message || 'Something went wrong while publishing.',
+        );
+        return;
+      }
+
+      if (res.ok) {
+        setPublishError(null);
+        // Redirect the user to the newly created post using its slug
+        navigate(`/post/${data.slug}`);
+      }
+    } catch {
+      setPublishError('Something went wrong while publishing.');
+    }
+  };
+
   return (
     <div className='p-3 max-w-3xl mx-auto min-h-screen'>
       <h1 className='text-3xl font-semibold text-center my-7'>Create a post</h1>
-      <form className='flex flex-col gap-4'>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <div className='flex flex-col gap-4 sm:flex-row justify-between'>
           <TextInput
             type='text'
             placeholder='Title'
             required
             id='title'
-            className='flex-3'
+            className='flex-1'
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-          <Select id='category' required className='flex-1'>
+          <Select
+            id='category'
+            required
+            className='flex-1'
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+          >
             <option value='uncategorized'>Select a category</option>
             <option value='javascript'>JavaScript</option>
             <option value='reactjs'>React.js</option>
             <option value='nextjs'>Next.js</option>
           </Select>
         </div>
+
         <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
           <FileInput
             ref={fileInputRef}
@@ -99,7 +147,7 @@ export default function CreatePost() {
           <Button
             className='p-6 cursor-pointer'
             type='button'
-            gradientduotone='purpleToBlue'
+            gradientDuoTone='purpleToBlue'
             size='sm'
             outline
             onClick={handleUploadImage}
@@ -124,14 +172,22 @@ export default function CreatePost() {
           placeholder='Write something...'
           className='h-72 mb-12'
           required
+          onChange={(value) => setFormData({ ...formData, content: value })}
         />
+
         <Button
           type='submit'
-          gradientduotone='purpleToPink'
+          gradientDuoTone='purpleToPink'
           className='cursor-pointer'
         >
           Publish
         </Button>
+
+        {publishError && (
+          <Alert className='mt-5' color='failure'>
+            {publishError}
+          </Alert>
+        )}
       </form>
     </div>
   );
