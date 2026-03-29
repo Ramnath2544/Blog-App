@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "flowbite-react/plugin/tailwindcss";
+@plugin 'tailwind-scrollbar';
 @source "../.flowbite-react/class-list.json";
 /* Add this line — enables class-based dark mode in Tailwind v4 */
 @variant dark (&:where(.dark, .dark *));
