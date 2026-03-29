@@ -20,6 +20,9 @@ import {
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
+// ADDED: Import the progress bar and its CSS
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -27,6 +30,8 @@ export default function DashProfile() {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  // ADDED: State to track the upload progress percentage
+  const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formDataUpdate, setFormDataUpdate] = useState({});
   const [updateSuccessMsg, setUpdateSuccessMsg] = useState(null);
@@ -53,6 +58,16 @@ export default function DashProfile() {
     const uploadImage = async () => {
       setIsUploading(true);
       setImageFileUploadError(null);
+      
+      // ADDED: Simulate progress starting at 0%
+      setImageFileUploadProgress(0);
+      const progressInterval = setInterval(() => {
+        setImageFileUploadProgress((prev) => {
+          // Slowly tick up to 90% while waiting for the fetch to resolve
+          if (prev >= 90) return prev;
+          return prev + 10;
+        });
+      }, 200);
 
       try {
         const formData = new FormData();
@@ -64,24 +79,41 @@ export default function DashProfile() {
         });
 
         const data = await response.json();
+        
+        // Clear the interval once the server responds
+        clearInterval(progressInterval);
 
         if (!response.ok) {
           setImageFileUploadError(data.error || "Could not upload image");
+          setImageFileUploadProgress(null); // Reset progress on error
           setIsUploading(false);
+          setImageFile(null);
+          setImageFileUrl(null);
           return;
         }
 
+        // On success, jump straight to 100%
+        setImageFileUploadProgress(100);
+        
+        // Hide the progress bar after 1 second of showing 100%
+        setTimeout(() => {
+          setImageFileUploadProgress(null);
+        }, 1000);
+
         setImageFileUrl(data.imageUrl);
-        // ADDED: Include the new image URL in the form data so it gets updated in the database
         setFormDataUpdate((prev) => ({
           ...prev,
           profilePicture: data.imageUrl,
         }));
         setIsUploading(false);
       } catch (error) {
+        clearInterval(progressInterval);
+        setImageFileUploadProgress(null);
         console.error("Error uploading image:", error);
         setImageFileUploadError("Network error: Could not upload image.");
         setIsUploading(false);
+        setImageFile(null);
+        setImageFileUrl(null);
       }
     };
 
@@ -92,7 +124,6 @@ export default function DashProfile() {
 
   const handleChange = (e) => {
     setFormDataUpdate({ ...formDataUpdate, [e.target.id]: e.target.value });
-    // Clear previous success messages when the user starts typing again
     setUpdateSuccessMsg(null);
   };
 
@@ -100,7 +131,6 @@ export default function DashProfile() {
     e.preventDefault();
     setUpdateSuccessMsg(null);
 
-    // Prevent submission if nothing was changed (neither text fields nor image)
     if (Object.keys(formDataUpdate).length === 0) {
       dispatch(
         updateFailure(
@@ -125,13 +155,12 @@ export default function DashProfile() {
         ? await res.json()
         : await res.text();
 
-      // FIXED: Added missing closing brace and properly structured the if/else
       if (!res.ok) {
         dispatch(updateFailure(data?.message || data));
       } else {
         dispatch(updateSuccess(data));
         setUpdateSuccessMsg("User profile updated successfully");
-        setFormDataUpdate({}); // Clear form update state after success
+        setFormDataUpdate({}); 
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
@@ -185,14 +214,42 @@ export default function DashProfile() {
           ref={filePickerRef}
           hidden
         />
+        {/* ADDED: relative positioning wrapper so the progressbar overlays the image perfectly */}
         <div
-          className="w-32 h-32 self-center cursor-pointer overflow-hidden rounded-full shadow-md"
+          className="relative w-32 h-32 self-center cursor-pointer shadow-md rounded-full"
           onClick={() => filePickerRef.current.click()}
         >
+          {/* ADDED: CircularProgressbar overlay */}
+          {imageFileUploadProgress && (
+            <CircularProgressbar
+              value={imageFileUploadProgress || 0}
+              text={`${imageFileUploadProgress}%`}
+              strokeWidth={5}
+              styles={{
+                root: {
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                },
+                path: {
+                  stroke: `rgba(62, 152, 199, ${
+                    imageFileUploadProgress / 100
+                  })`,
+                },
+              }}
+            />
+          )}
           <img
             src={imageFileUrl || avatarUrl(currentUser.profilePicture)}
             alt="user"
-            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${isUploading ? "opacity-50" : ""}`}
+            // ADDED: dynamic opacity using imageFileUploadProgress state
+            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
+              imageFileUploadProgress && imageFileUploadProgress < 100
+                ? "opacity-60"
+                : ""
+            }`}
           />
         </div>
 
@@ -223,7 +280,7 @@ export default function DashProfile() {
 
         <Button
           type="submit"
-          gradientduotone="purpleToBlue"
+          gradientDuoTone="purpleToBlue"
           outline
           disabled={loading || isUploading}
           className="cursor-pointer"
@@ -238,11 +295,11 @@ export default function DashProfile() {
           <Link to="/create-post">
             <Button
               type="button"
-              gradientduotone="purpleToPink"
+              gradientDuoTone="purpleToPink"
               className="cursor-pointer w-full"
             >
-            Create a post
-          </Button>
+              Create a post
+            </Button>
           </Link>
         )}
       </form>
@@ -273,6 +330,7 @@ export default function DashProfile() {
           Sign Out
         </span>
       </div>
+      
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

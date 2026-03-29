@@ -3,12 +3,14 @@ import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 export default function CreatePost() {
   const [imageFile, setImageFile] = useState(null);
-  const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [imageUploadProgress, setImageUploadProgress] = useState(null);
 
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
@@ -21,16 +23,14 @@ export default function CreatePost() {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      setImageUploadError(
-        'Could not upload image (File must be less than 2MB)',
-      );
+      setImageUploadError('Could not upload image (File must be less than 2MB)');
       setImageFile(null);
       return;
     }
 
     setImageUploadError(null);
     setImageFile(file);
-    setImageFileUrl(URL.createObjectURL(file));
+    // REMOVED local URL preview creation from here
   };
 
   const handleUploadImage = async () => {
@@ -41,6 +41,14 @@ export default function CreatePost() {
 
     setIsUploading(true);
     setImageUploadError(null);
+    setImageUploadProgress(0);
+
+    const progressInterval = setInterval(() => {
+      setImageUploadProgress((prev) => {
+        if (prev >= 90) return prev;
+        return prev + 10;
+      });
+    }, 200);
 
     try {
       const uploadData = new FormData();
@@ -48,9 +56,11 @@ export default function CreatePost() {
 
       const res = await fetch('/api/upload-image', {
         method: 'POST',
-        credentials: 'include', // Crucial for sending HTTP-only cookies to prevent 401 Unauthorized
+        credentials: 'include',
         body: uploadData,
       });
+
+      clearInterval(progressInterval);
 
       const contentType = res.headers.get('content-type') || '';
       const data = contentType.includes('application/json')
@@ -58,20 +68,26 @@ export default function CreatePost() {
         : await res.text();
 
       if (!res.ok) {
-        setImageUploadError(
-          data?.error || data?.message || 'Could not upload image',
-        );
+        setImageUploadError(data?.error || data?.message || 'Could not upload image');
         setIsUploading(false);
+        setImageUploadProgress(null);
         return;
       }
 
-      setImageFileUrl(data.imageUrl);
+      setImageUploadProgress(100);
+      
+      setTimeout(() => {
+        setImageUploadProgress(null);
+        setIsUploading(false);
+      }, 1000);
+
+      // Save the confirmed backend URL directly into formData
+      // The image tag below now reads strictly from formData.image
       setFormData({ ...formData, image: data.imageUrl });
-      setIsUploading(false);
     } catch (err) {
-      setImageUploadError(
-        err.message || 'Network error: Could not upload image',
-      );
+      clearInterval(progressInterval);
+      setImageUploadProgress(null);
+      setImageUploadError(err.message || 'Network error: Could not upload image');
       setIsUploading(false);
     }
   };
@@ -84,21 +100,18 @@ export default function CreatePost() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Crucial for sending HTTP-only cookies to prevent 401 Unauthorized
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setPublishError(
-          data.message || 'Something went wrong while publishing.',
-        );
+        setPublishError(data.message || 'Something went wrong while publishing.');
         return;
       }
 
       if (res.ok) {
         setPublishError(null);
-        // Redirect the user to the newly created post using its slug
         navigate(`/post/${data.slug}`);
       }
     } catch {
@@ -117,17 +130,13 @@ export default function CreatePost() {
             required
             id='title'
             className='flex-1'
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
           <Select
             id='category'
             required
             className='flex-1'
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           >
             <option value='uncategorized'>Select a category</option>
             <option value='javascript'>JavaScript</option>
@@ -144,24 +153,51 @@ export default function CreatePost() {
             onChange={handleImageChange}
             disabled={isUploading}
           />
+          
           <Button
-            className='p-6 cursor-pointer'
             type='button'
             gradientDuoTone='purpleToBlue'
             size='sm'
             outline
             onClick={handleUploadImage}
             disabled={isUploading}
+            className='min-w-[160px] p-2' 
           >
-            {isUploading ? 'Uploading...' : 'Upload image'}
+            <div className='flex items-center justify-center gap-3'>
+              {isUploading && imageUploadProgress !== null ? (
+                <>
+                  <div className='w-8 h-8'>
+                    <CircularProgressbar
+                      value={imageUploadProgress}
+                      text={`${imageUploadProgress}%`}
+                      styles={{
+                        root: { width: '100%', height: '100%' },
+                        path: {
+                          stroke: `rgba(62, 152, 199, ${imageUploadProgress / 100})`,
+                        },
+                        text: {
+                          fill: '#3e98c7',
+                          fontSize: '32px',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    />
+                  </div>
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <span>Upload image</span>
+              )}
+            </div>
           </Button>
         </div>
 
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
 
-        {imageFileUrl && (
+        {/* MODIFIED: Now only renders if the upload was successful and formData.image exists */}
+        {formData.image && (
           <img
-            src={imageFileUrl}
+            src={formData.image}
             alt='upload'
             className='w-full h-72 object-cover rounded-lg border border-gray-200 dark:border-gray-800'
           />
