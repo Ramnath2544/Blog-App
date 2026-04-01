@@ -97,7 +97,7 @@ Here's a list of all the primary API routes derived from the application structu
 **Backend:**  
 - Node.js & Express.js (API Routing & Middleware)
 - OAuth (Social Authentication)
-- MongoDB / SQL (Database)
+- MongoDB (Database)
 
 **Other Tools:**  
 - Git / GitHub (Version Control)
