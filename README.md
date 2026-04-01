@@ -112,18 +112,18 @@ This project separates frontend interactive logic (React components and pages) f
 
 ### Example Directory Structure
 ```text
-blog-app/<br>
-├── client/                 # React Frontend<br>
+blog-app/
+├── client/                 # React Frontend
 │   ├── src/<br>
-│   │   ├── components/     # Reusable UI components (Header, Footer, Sidebar)<br>
-│   │   ├── pages/          # App routes (SignIn, SignUp, Dashboard, PostPage)<br>
+│   │   ├── components/     # Reusable UI components (Header, Footer, Sidebar)
+│   │   ├── pages/          # App routes (SignIn, SignUp, Dashboard, PostPage)
 │   │   └── redux/          # Redux slices and store configuration<br>
-├── api/                    # Node.js Express Backend<br>
-│   ├── controllers/        # Business logic for auth, user, and post routes<br>
-│   ├── models/             # Database Schemas (User, Post)<br>
-│   ├── routes/             # API Endpoints definition<br>
-│   └── utils/              # Middleware (Error handlers, Auth verification)<br>
-└── package.json            # Project dependencies and scripts<br>
+├── api/                    # Node.js Express Backend
+│   ├── controllers/        # Business logic for auth, user, and post routes
+│   ├── models/             # Database Schemas (User, Post)
+│   ├── routes/             # API Endpoints definition
+│   └── utils/              # Middleware (Error handlers, Auth verification)
+└── package.json            # Project dependencies and scripts
 ```
 
 ---
