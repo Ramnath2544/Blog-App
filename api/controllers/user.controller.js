@@ -59,12 +59,11 @@ export const updateUser = async (req, res, next) => {
   }
 
   if (req.body.password !== undefined) {
-    // If user cleared the password field, treat it as 'no password update'.
     if (
       typeof req.body.password !== 'string' ||
       req.body.password.trim() === ''
     ) {
-      // Do nothing.
+  
     } else {
       if (req.body.password.length < 6) {
         return next(

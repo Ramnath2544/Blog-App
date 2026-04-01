@@ -20,7 +20,6 @@ import {
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
-// ADDED: Import the progress bar and its CSS
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -30,7 +29,7 @@ export default function DashProfile() {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  // ADDED: State to track the upload progress percentage
+
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formDataUpdate, setFormDataUpdate] = useState({});
@@ -58,12 +57,9 @@ export default function DashProfile() {
     const uploadImage = async () => {
       setIsUploading(true);
       setImageFileUploadError(null);
-      
-      // ADDED: Simulate progress starting at 0%
       setImageFileUploadProgress(0);
       const progressInterval = setInterval(() => {
         setImageFileUploadProgress((prev) => {
-          // Slowly tick up to 90% while waiting for the fetch to resolve
           if (prev >= 90) return prev;
           return prev + 10;
         });
@@ -79,23 +75,19 @@ export default function DashProfile() {
         });
 
         const data = await response.json();
-        
-        // Clear the interval once the server responds
         clearInterval(progressInterval);
 
         if (!response.ok) {
           setImageFileUploadError(data.error || "Could not upload image");
-          setImageFileUploadProgress(null); // Reset progress on error
+          setImageFileUploadProgress(null); 
           setIsUploading(false);
           setImageFile(null);
           setImageFileUrl(null);
           return;
         }
 
-        // On success, jump straight to 100%
         setImageFileUploadProgress(100);
-        
-        // Hide the progress bar after 1 second of showing 100%
+ 
         setTimeout(() => {
           setImageFileUploadProgress(null);
         }, 1000);
@@ -214,12 +206,12 @@ export default function DashProfile() {
           ref={filePickerRef}
           hidden
         />
-        {/* ADDED: relative positioning wrapper so the progressbar overlays the image perfectly */}
+ 
         <div
           className="relative w-32 h-32 self-center cursor-pointer shadow-md rounded-full"
           onClick={() => filePickerRef.current.click()}
         >
-          {/* ADDED: CircularProgressbar overlay */}
+
           {imageFileUploadProgress && (
             <CircularProgressbar
               value={imageFileUploadProgress || 0}
@@ -244,7 +236,7 @@ export default function DashProfile() {
           <img
             src={imageFileUrl || avatarUrl(currentUser.profilePicture)}
             alt="user"
-            // ADDED: dynamic opacity using imageFileUploadProgress state
+ 
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
               imageFileUploadProgress && imageFileUploadProgress < 100
                 ? "opacity-60"

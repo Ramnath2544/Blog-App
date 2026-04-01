@@ -30,7 +30,6 @@ export default function CreatePost() {
 
     setImageUploadError(null);
     setImageFile(file);
-    // REMOVED local URL preview creation from here
   };
 
   const handleUploadImage = async () => {
@@ -81,8 +80,6 @@ export default function CreatePost() {
         setIsUploading(false);
       }, 1000);
 
-      // Save the confirmed backend URL directly into formData
-      // The image tag below now reads strictly from formData.image
       setFormData({ ...formData, image: data.imageUrl });
     } catch (err) {
       clearInterval(progressInterval);
@@ -194,7 +191,6 @@ export default function CreatePost() {
 
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
 
-        {/* MODIFIED: Now only renders if the upload was successful and formData.image exists */}
         {formData.image && (
           <img
             src={formData.image}
