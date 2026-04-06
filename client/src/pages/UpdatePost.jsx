@@ -191,7 +191,7 @@ export default function UpdatePost() {
 
           <Button
             type='button'
-            gradientDuoTone='purpleToBlue'
+            gradientduotone='purpleToBlue'
             size='sm'
             outline
             onClick={handleUploadImage}
@@ -248,7 +248,7 @@ export default function UpdatePost() {
 
         <Button
           type='submit'
-          gradientDuoTone='purpleToPink'
+          gradientduotone='purpleToPink'
           className='cursor-pointer'
         >
           Update post

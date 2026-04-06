@@ -79,7 +79,7 @@ export default function DashProfile() {
 
         if (!response.ok) {
           setImageFileUploadError(data.error || "Could not upload image");
-          setImageFileUploadProgress(null); 
+          setImageFileUploadProgress(null);
           setIsUploading(false);
           setImageFile(null);
           setImageFileUrl(null);
@@ -87,7 +87,7 @@ export default function DashProfile() {
         }
 
         setImageFileUploadProgress(100);
- 
+
         setTimeout(() => {
           setImageFileUploadProgress(null);
         }, 1000);
@@ -152,7 +152,7 @@ export default function DashProfile() {
       } else {
         dispatch(updateSuccess(data));
         setUpdateSuccessMsg("User profile updated successfully");
-        setFormDataUpdate({}); 
+        setFormDataUpdate({});
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
@@ -206,7 +206,7 @@ export default function DashProfile() {
           ref={filePickerRef}
           hidden
         />
- 
+
         <div
           className="relative w-32 h-32 self-center cursor-pointer shadow-md rounded-full"
           onClick={() => filePickerRef.current.click()}
@@ -226,9 +226,8 @@ export default function DashProfile() {
                   left: 0,
                 },
                 path: {
-                  stroke: `rgba(62, 152, 199, ${
-                    imageFileUploadProgress / 100
-                  })`,
+                  stroke: `rgba(62, 152, 199, ${imageFileUploadProgress / 100
+                    })`,
                 },
               }}
             />
@@ -236,12 +235,11 @@ export default function DashProfile() {
           <img
             src={imageFileUrl || avatarUrl(currentUser.profilePicture)}
             alt="user"
- 
-            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
-              imageFileUploadProgress && imageFileUploadProgress < 100
+
+            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${imageFileUploadProgress && imageFileUploadProgress < 100
                 ? "opacity-60"
                 : ""
-            }`}
+              }`}
           />
         </div>
 
@@ -272,7 +270,7 @@ export default function DashProfile() {
 
         <Button
           type="submit"
-          gradientDuoTone="purpleToBlue"
+          gradientduotone="purpleToBlue"
           outline
           disabled={loading || isUploading}
           className="cursor-pointer"
@@ -287,7 +285,7 @@ export default function DashProfile() {
           <Link to="/create-post">
             <Button
               type="button"
-              gradientDuoTone="purpleToPink"
+              gradientduotone="purpleToPink"
               className="cursor-pointer w-full"
             >
               Create a post
@@ -322,7 +320,7 @@ export default function DashProfile() {
           Sign Out
         </span>
       </div>
-      
+
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

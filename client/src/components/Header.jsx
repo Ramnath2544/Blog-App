@@ -66,11 +66,10 @@ export default function Header() {
         <button
           onClick={() => dispatch(toggleTheme())}
           className={`cursor-pointer w-10 h-10 hidden sm:flex items-center justify-center rounded-full transition-all duration-500 
-    ${
-      theme === 'light'
-        ? 'bg-gradient-to-br from-amber-300 to-orange-400 shadow-[0_0_12px_rgba(251,146,60,0.8)] hover:shadow-[0_0_20px_rgba(251,146,60,1)] hover:scale-110'
-        : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-[0_0_12px_rgba(139,92,246,0.8)] hover:shadow-[0_0_20px_rgba(139,92,246,1)] hover:scale-110'
-    }`}
+    ${theme === 'light'
+              ? 'bg-gradient-to-br from-amber-300 to-orange-400 shadow-[0_0_12px_rgba(251,146,60,0.8)] hover:shadow-[0_0_20px_rgba(251,146,60,1)] hover:scale-110'
+              : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-[0_0_12px_rgba(139,92,246,0.8)] hover:shadow-[0_0_20px_rgba(139,92,246,1)] hover:scale-110'
+            }`}
         >
           {theme === 'light' ? (
             <FaSun className='text-white text-lg drop-shadow-[0_0_4px_rgba(255,255,255,0.9)] animate-spin-slow' />

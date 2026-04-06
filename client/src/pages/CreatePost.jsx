@@ -74,7 +74,7 @@ export default function CreatePost() {
       }
 
       setImageUploadProgress(100);
-      
+
       setTimeout(() => {
         setImageUploadProgress(null);
         setIsUploading(false);
@@ -150,15 +150,15 @@ export default function CreatePost() {
             onChange={handleImageChange}
             disabled={isUploading}
           />
-          
+
           <Button
             type='button'
-            gradientDuoTone='purpleToBlue'
+            gradientduotone='purpleToBlue'
             size='sm'
             outline
             onClick={handleUploadImage}
             disabled={isUploading}
-            className='min-w-[160px] p-2' 
+            className='min-w-[160px] p-2'
           >
             <div className='flex items-center justify-center gap-3'>
               {isUploading && imageUploadProgress !== null ? (
@@ -209,7 +209,7 @@ export default function CreatePost() {
 
         <Button
           type='submit'
-          gradientDuoTone='purpleToPink'
+          gradientduotone='purpleToPink'
           className='cursor-pointer'
         >
           Publish
