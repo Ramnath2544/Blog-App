@@ -13,7 +13,6 @@ export const updateUser = async (req, res, next) => {
   tokenUserId = tokenUserId.toString();
   const requestedUserId = req.params?.userId?.toString();
 
-  // Security: only allow updating your own profile.
   if (requestedUserId && tokenUserId !== requestedUserId) {
     return next(errorHandler(403, 'You are not allowed to update this user'));
   }
@@ -63,7 +62,6 @@ export const updateUser = async (req, res, next) => {
       typeof req.body.password !== 'string' ||
       req.body.password.trim() === ''
     ) {
-  
     } else {
       if (req.body.password.length < 6) {
         return next(
@@ -134,7 +132,7 @@ export const getUsers = async (req, res, next) => {
       .sort({ createdAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
-    
+
     const userWithoutPassword = users.map((user) => {
       const { password, ...rest } = user._doc;
       return rest;
@@ -148,14 +146,28 @@ export const getUsers = async (req, res, next) => {
       now.getMonth() - 1,
       now.getDate(),
     );
-    const lastMonthUsers = await User.countDocuments({ createdAt: { $gte: oneMonthAgo } });
-
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
 
     res.status(200).json({
       users: userWithoutPassword,
       totalUsers,
       lastMonthUsers,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    const { password, ...rest } = user._doc;
+    res.status(200).json(rest);
   } catch (error) {
     next(error);
   }
