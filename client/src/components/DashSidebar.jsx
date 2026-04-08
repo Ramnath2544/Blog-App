@@ -7,6 +7,7 @@ import {
 import {
   HiAnnotation,
   HiArrowSmRight,
+  HiChartPie,
   HiDocumentText,
   HiOutlineUserGroup,
   HiUser,
@@ -51,6 +52,16 @@ export default function DashSidebar() {
     <Sidebar className='w-full md:w-56'>
       <SidebarItems>
         <SidebarItemGroup className='flex flex-col gap-1 '>
+          {currentUser && currentUser.isAdmin && (
+            <SidebarItem
+              as={Link}
+              to='/dashboard?tab=dash'
+              active={tab === 'dash' || !tab}
+              icon={HiChartPie}
+            >
+              Dashboard
+            </SidebarItem>
+          )}
           <SidebarItem
             as={Link}
             to='/dashboard?tab=profile'
