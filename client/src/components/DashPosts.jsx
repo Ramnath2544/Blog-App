@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Button,
   Modal,
@@ -11,22 +11,24 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
-} from 'flowbite-react';
-import { Link } from 'react-router-dom';
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
+} from "flowbite-react";
+import { Link } from "react-router-dom";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [postIdToDelete, setPostIdToDelete] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const userId = currentUser?._id;
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
+        const res = await fetch(`/api/post/getposts?userId=${userId}`);
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
@@ -38,10 +40,10 @@ export default function DashPosts() {
         console.log(error.message);
       }
     };
-    if (currentUser.isAdmin) {
+    if (userId) {
       fetchPosts();
     }
-  }, [currentUser._id, currentUser.isAdmin]);
+  }, [userId]);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
@@ -64,14 +66,19 @@ export default function DashPosts() {
   const handleDeletePost = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/post/deletepost/${postIdToDelete}/${currentUser._id}`, {
-        method: 'DELETE',
-      }); 
+      const res = await fetch(
+        `/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
+        {
+          method: "DELETE",
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
       } else {
-        setUserPosts((prev) => prev.filter((post) => post._id !== postIdToDelete));
+        setUserPosts((prev) =>
+          prev.filter((post) => post._id !== postIdToDelete),
+        );
       }
     } catch (error) {
       console.log(error.message);
@@ -82,10 +89,10 @@ export default function DashPosts() {
   };
 
   return (
-    <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-500'>
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-500">
+      {currentUser && userPosts.length > 0 ? (
         <>
-          <Table hoverable className='shadow-md'>
+          <Table hoverable className="shadow-md">
             <TableHead>
               <TableRow>
                 <TableHeadCell>Date updated</TableHeadCell>
@@ -98,10 +105,13 @@ export default function DashPosts() {
                 </TableHeadCell>
               </TableRow>
             </TableHead>
-            
-            <TableBody className='divide-y'>
+
+            <TableBody className="divide-y">
               {userPosts.map((post) => (
-                <TableRow key={post._id} className='bg-white dark:border-gray-700 dark:bg-gray-800'>
+                <TableRow
+                  key={post._id}
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                >
                   <TableCell>
                     {new Date(post.updatedAt).toLocaleDateString()}
                   </TableCell>
@@ -110,13 +120,13 @@ export default function DashPosts() {
                       <img
                         src={post.image}
                         alt={post.title}
-                        className='w-20 h-10 object-cover bg-gray-500'
+                        className="w-20 h-10 object-cover bg-gray-500"
                       />
                     </Link>
                   </TableCell>
                   <TableCell>
                     <Link
-                      className='font-medium text-gray-900 dark:text-white'
+                      className="font-medium text-gray-900 dark:text-white"
                       to={`/post/${post.slug}`}
                     >
                       {post.title}
@@ -124,19 +134,19 @@ export default function DashPosts() {
                   </TableCell>
                   <TableCell>{post.category}</TableCell>
                   <TableCell>
-                    <span 
+                    <span
                       onClick={() => {
                         setShowModal(true);
                         setPostIdToDelete(post._id);
-                      }} 
-                      className='font-medium text-red-500 hover:underline cursor-pointer'
+                      }}
+                      className="font-medium text-red-500 hover:underline cursor-pointer"
                     >
                       Delete
                     </span>
                   </TableCell>
                   <TableCell>
                     <Link
-                      className='text-teal-500 hover:underline'
+                      className="text-teal-500 hover:underline"
                       to={`/update-post/${post._id}`}
                     >
                       <span>Edit</span>
@@ -146,11 +156,11 @@ export default function DashPosts() {
               ))}
             </TableBody>
           </Table>
-          
+
           {showMore && (
             <button
               onClick={handleShowMore}
-              className='w-full text-teal-500 self-center text-sm py-7 cursor-pointer hover:underline'
+              className="w-full text-teal-500 self-center text-sm py-7 cursor-pointer hover:underline"
             >
               Show More
             </button>
@@ -159,7 +169,7 @@ export default function DashPosts() {
       ) : (
         <p>You have no posts yet!</p>
       )}
-      
+
       <Modal
         show={showModal}
         onClose={() => setShowModal(false)}

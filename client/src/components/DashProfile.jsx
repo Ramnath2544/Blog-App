@@ -20,8 +20,8 @@ import {
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -211,7 +211,6 @@ export default function DashProfile() {
           className="relative w-32 h-32 self-center cursor-pointer shadow-md rounded-full"
           onClick={() => filePickerRef.current.click()}
         >
-
           {imageFileUploadProgress && (
             <CircularProgressbar
               value={imageFileUploadProgress || 0}
@@ -219,15 +218,16 @@ export default function DashProfile() {
               strokeWidth={5}
               styles={{
                 root: {
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
                   top: 0,
                   left: 0,
                 },
                 path: {
-                  stroke: `rgba(62, 152, 199, ${imageFileUploadProgress / 100
-                    })`,
+                  stroke: `rgba(62, 152, 199, ${
+                    imageFileUploadProgress / 100
+                  })`,
                 },
               }}
             />
@@ -235,11 +235,11 @@ export default function DashProfile() {
           <img
             src={imageFileUrl || avatarUrl(currentUser.profilePicture)}
             alt="user"
-
-            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${imageFileUploadProgress && imageFileUploadProgress < 100
+            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
+              imageFileUploadProgress && imageFileUploadProgress < 100
                 ? "opacity-60"
                 : ""
-              }`}
+            }`}
           />
         </div>
 
@@ -281,7 +281,7 @@ export default function DashProfile() {
               ? "Uploading Image..."
               : "Update"}
         </Button>
-        {currentUser.isAdmin && (
+        {currentUser && (
           <Link to="/create-post">
             <Button
               type="button"

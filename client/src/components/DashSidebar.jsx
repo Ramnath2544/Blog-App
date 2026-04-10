@@ -73,7 +73,7 @@ export default function DashSidebar() {
             Profile
           </SidebarItem>
 
-          {currentUser?.isAdmin && (
+          {currentUser && (
             <SidebarItem
               as={Link}
               to='/dashboard?tab=posts'
