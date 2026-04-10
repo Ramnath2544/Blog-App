@@ -133,7 +133,8 @@ export default function Search() {
               <option value='javascript'>JavaScript</option>
             </Select>
           </div>
-          <Button type='submit' outline gradientduotone='purpleToPink'>
+          <Button type='submit' outline gradientduotone='purpleToPink'
+          className='cursor-pointer'>
             Apply Filters
           </Button>
         </form>
