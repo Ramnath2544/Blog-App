@@ -120,7 +120,8 @@ blog-app/
 │   ├── utils/                  # Middleware (Error handlers, verifyToken)
 │   └── index.js                # Server entry point and DB connection
 └── package.json                # Project dependencies and scripts
-``text
+
+```
 ---
 
 ## 🔧 Getting Started
