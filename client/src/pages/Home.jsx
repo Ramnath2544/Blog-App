@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import CallToAction from '../components/CallToAction';
+import CallToAction3D from '../components/CallToAction3D';
+import Hero3D from '../components/Hero3D';
 import { useEffect, useState } from 'react';
-import PostCard from '../components/PostCard';
+import PostCard3D from '../components/PostCard3D';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -14,46 +16,90 @@ export default function Home() {
     };
     fetchPosts();
   }, []);
+
   return (
-    <div>
-      <div className='flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto'>
-        <h1 className='text-3xl font-bold lg:text-6xl'>Welcome to my Blog</h1>
-        <p className='text-gray-500 text-xs sm:text-sm'>
-          Welcome to my blog! Here you'll find a wide range of articles,
-          tutorials, and resources designed to help you grow as a developer.
-          Whether you're interested in web development, software engineering,
-          programming languages, or best practices in the tech industry, there's
-          something here for everyone. Dive in and explore the content to expand
-          your knowledge and skills.
-        </p>
-        <Link
-          to='/search'
-          className='text-xs sm:text-sm text-teal-500 font-bold hover:underline'
-        >
-          View all posts
-        </Link>
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Hero Section with 3D */}
+      <Hero3D />
+
+      {/* Call to Action Section */}
+      <div className='max-w-7xl mx-auto px-6 py-16'>
+        <CallToAction3D />
       </div>
-      <div className='p-3 bg-amber-100 dark:bg-slate-700'>
-        <CallToAction />
-      </div>
-      <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7'>
+
+      {/* Recent Posts Section */}
+      <div className='max-w-7xl mx-auto px-6 py-16'>
         {posts && posts.length > 0 && (
-          <div className='flex flex-col gap-6'>
-            <h2 className='text-2xl font-semibold text-center'>Recent Posts</h2>
-            <div className='flex flex-wrap gap-4'>
-              {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
+          <div className='flex flex-col gap-12'>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center space-y-4"
+            >
+              <h2 className='text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500'>
+                Latest Articles
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+                Explore our most recent insights, tutorials, and stories from the world of technology
+              </p>
+            </motion.div>
+
+            <div className='flex flex-wrap justify-center gap-8'>
+              {posts.map((post, index) => (
+                <PostCard3D key={post._id} post={post} index={index} />
               ))}
             </div>
-            <Link
-              to={'/search'}
-              className='text-lg text-teal-500 hover:underline text-center'
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center"
             >
-              View all posts
-            </Link>
+              <Link to={'/search'}>
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(6, 182, 212, 0.3)" }}
+                  whileTap={{ scale: 0.95 }}
+                  className='px-10 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300'
+                >
+                  View All Posts →
+                </motion.button>
+              </Link>
+            </motion.div>
           </div>
         )}
       </div>
+
+      {/* Features Section */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="max-w-7xl mx-auto px-6 py-16"
+      >
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { icon: "🎨", title: "Beautiful Design", desc: "Modern and clean interface with smooth animations" },
+            { icon: "⚡", title: "Lightning Fast", desc: "Optimized performance for the best user experience" },
+            { icon: "🔒", title: "Secure & Safe", desc: "Your data is protected with enterprise-grade security" }
+          ].map((feature, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.2 }}
+              whileHover={{ y: -10, scale: 1.03 }}
+              className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+            >
+              <div className="text-5xl mb-4">{feature.icon}</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-800 dark:text-white">{feature.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
